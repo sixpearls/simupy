@@ -21,11 +21,11 @@ De-prioritize symbolics
     - Helper to construct jacobians using numerical difference? how to estimate step size? Default to 1? Can we assume origin is in domain? Use initial condition and/or value to guess step size? Maybe an algorithm exists for this.
     - Syntax candy for constructing systems?
         - Class method to cast any namespace into a ``DynamicalSystem``: If ``dim_event``, ``dim_input``, or ``dim_state`` is not assigned, set to 0; if ``dim_output`` not assigned, set to ``dim_state``, etc. numerical difference default partial derivative evaluator?
-        - a Metaclass that can handle parameters etc in similar manner to how the symbolic codegen works? Or maybe the codegen just writes code that subclasses this meta? Part of it might be that annotated dataclass or whatever 
+        - a Metaclass that can handle parameters etc in similar manner to how the symbolic codegen works? Or maybe the codegen just writes code that subclasses this meta? Part of it might be that annotated dataclass or whatever. Below is sketch of user code:
 
             .. code :: python 
 
-                @jacobians_from_complex_step
+                @jacobians_from_complex_step # this decorator adds state_jacobian(parameters, t, x, u) using complex step; otherwise may optionally provide own derivatives
                 class MySystemModel(DynamicalSystem):
                     """
                     default repr prints as MySystemModel(l=<value>, m=<value>, b=<value>) which would be really pretty
@@ -36,15 +36,17 @@ De-prioritize symbolics
                     dim_output=4
                     l: float # length of pendulum
                     g=9.8 # m/s^2 gravity constant; use equality (class attribute) for non-parametric constant -- can this be extended for aero module of Vehicle? would need base plus increments
+                    #  dataclasses have a flag for indicating a paramete doens't go to repr; there may be a conditional version
                     m: float # mass
                     b: float # damping??
-                    default_initial_condition = np.zeros(4) # default initialcondition
+                    default_initial_condition = np.zeros(4) # default initialcondition; default default is also zeros?
 
                     @vectorized # annotation must just add an is_vectorized flag to the function that BlockDiagrams use??
                     # should be able to use numba or something here desired
                     def state_equation_function(t, x, u):
                         """
                         I would kind o flike it if the signature did not include self and the parameters got magically applied to the namespace but I don't think it works that way
+                        but, we can pretend it's just "parameters"
                         For some reason I want to use assume shapes for t: ([1], ...), x: (dim_state, ...), u: (dim_input, ...)
                         it seems reasonable to assume that a naive unravle on state/input would work! 
                         """
@@ -54,11 +56,15 @@ De-prioritize symbolics
                         return np.array([thetadot, v, thetadotdot, a])
 
 
-                    # no is_vectorized flag means metaclass automatically wraps with numpy.vectorize or equivalent?
+                    # no is_vectorized flag means metaclass automatically wraps with numpy.vectorize or equivalent? if needed....
                     def output_equation_function(t, x):
                         """
                         without @vectorized annotation,
                         """
+
+
+          - Preserve old API as much as possible, I think except for possible folder layout changes, the actual API should be pretty easy. Is there an easy transition/recovery thing we could provide? Then we can just be super verbose about the extra features and since we have a way of doing it expressively, the previous API compatible version can be slightly tedious.
+
 
 
 
