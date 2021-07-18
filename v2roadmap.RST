@@ -43,17 +43,20 @@ De-prioritize symbolics
 
                     @vectorized # annotation must just add an is_vectorized flag to the function that BlockDiagrams use??
                     # should be able to use numba or something here desired
-                    def state_equation_function(t, x, u):
+                    def state_equation_function(parameters, t, x, u):
                         """
                         I would kind o flike it if the signature did not include self and the parameters got magically applied to the namespace but I don't think it works that way
                         but, we can pretend it's just "parameters"
                         For some reason I want to use assume shapes for t: ([1], ...), x: (dim_state, ...), u: (dim_input, ...)
-                        it seems reasonable to assume that a naive unravle on state/input would work! 
+                        it seems reasonable to assume that a naive/pure python unpacking on state/input would work! Even though rows (0th axis) for time is common (e.g., pandas)
+                        Could provide a convenience function that gives view using moveaxis so it can be unpacked conveniently... user may want to copy for continuity? 
                         """
+                        l, g, m, b = parameters.fields() # dataclass should provide something like this
                         theta, p, thetadot, v = x
                         a = u
                         thetadotdot = -g*sin(theta)*m*l**2
-                        return np.array([thetadot, v, thetadotdot, a])
+                        xdot = np.array([thetadot, v, thetadotdot, a])
+                        return xdot
 
 
                     # no is_vectorized flag means metaclass automatically wraps with numpy.vectorize or equivalent? if needed....
