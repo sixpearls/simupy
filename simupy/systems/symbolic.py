@@ -110,10 +110,16 @@ class DynamicalSystem(DynamicalSystemBase):
         if state_equation is None:  # or other checks?
             state_equation = empty_array()
         else:
-            assert len(state_equation) == len(self.state)
-            assert find_dynamicsymbols(state_equation) <= (
-                    set(self.state) | set(self.input)
-                )
+            try:
+                dim_state_check1, dim_state_check2 = state_equation.shape
+            except e:
+                dim_state_check1 = len(state_equation)
+            assert dim_state_check1 == len(self.state)
+            # assert len(state_equation) == len(self.state)
+            check_set = set(self.state)
+            if self.dim_input:
+                check_set = check_set | set(self.input)
+            assert find_dynamicsymbols(state_equation) <= check_set
             assert state_equation.atoms(sp.Symbol) <= (
                     set(self.constants_values.keys())
                     | set([dynamicsymbols._t])
@@ -160,9 +166,12 @@ class DynamicalSystem(DynamicalSystemBase):
     def update_state_equation_function(self):
         if not self.dim_state or self.state_equation == empty_array():
             return
+        state_func_args = [dynamicsymbols._t] + sp.flatten(self.state)
+        if self.dim_input:
+            state_func_args += sp.flatten(self.input)
+
         self.state_equation_function = self.code_generator(
-            [dynamicsymbols._t] + sp.flatten(self.state) +
-            sp.flatten(self.input),
+            state_func_args,
             self.state_equation.subs(self.constants_values),
             **self.code_generator_args
         )

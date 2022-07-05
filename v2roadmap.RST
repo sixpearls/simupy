@@ -18,7 +18,7 @@ De-prioritize symbolics
     - Remove ``_equation`` from function names?
     - Metadata flag to indicate if functions are complex safe? No, can provide helper for creating jacobians using complex safe. 
     - Metadata flag to indicate broadcastable? Something like that. Need to determine best signature (..., n) vs (n, ...)
-    - Helper to construct jacobians using numerical difference? how to estimate step size? Default to 1? Can we assume origin is in domain? Use initial condition and/or value to guess step size? Maybe an algorithm exists for this.
+    - Helper to construct jacobians using numerical difference? how to estimate step size? Default to 1? Can we assume origin is in domain? Use initial condition and/or value to guess step size? Maybe an algorithm exists for this. And to use JAX or other differentiation methods??
     - Syntax candy for constructing systems?
         - Class method to cast any namespace into a ``DynamicalSystem``: If ``dim_event``, ``dim_input``, or ``dim_state`` is not assigned, set to 0; if ``dim_output`` not assigned, set to ``dim_state``, etc. numerical difference default partial derivative evaluator?
         - a Metaclass that can handle parameters etc in similar manner to how the symbolic codegen works? Or maybe the codegen just writes code that subclasses this meta? Part of it might be that annotated dataclass or whatever. Below is sketch of user code:
@@ -106,7 +106,7 @@ New ``simulate`` API
 
               def simulate(self, tF, **kwargs):
                   get_current_default_integrator_with_current_default_options().simulate(system=self, tF, **kwargs)
-      
+
       then as long as the wrapper for the SciPy dopri methods takes ``int_options`` as a kwarg (or each field as a kwarg) and have it pull the default options dictionary, the API would be preserved.
 
 

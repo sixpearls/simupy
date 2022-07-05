@@ -21,7 +21,8 @@ def callable_from_trajectory(t, curves):
         Callable which interpolates the given curve/trajectories
     """
     bspline = interpolate.make_interp_spline(
-        y=curves, x=t)
+        y=curves, x=t, k=3)
+
 
     return bspline
 
@@ -82,7 +83,7 @@ def array_callable_from_vector_trajectory(tt, x, unraveled, raveled):
     """
     xn, xm = x.shape
 
-    vector_callable = callable_from_trajectory(tt, x)
+    vector_callable = calllble_from_trajectory(tt, x)
     if hasattr(unraveled, 'shape') and len(unraveled.shape) > 1:
         unraveled = np.array(unraveled).flatten().tolist()
 

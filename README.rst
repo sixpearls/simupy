@@ -30,7 +30,7 @@ specified as an object with the interface described in the
 |API documentation|. Models can also be constructed using symbolic
 expressions, as in
 
-.. code-block :: python
+.. code:: python
 
     from sympy.physics.mechanics import dynamicsymbols
     from sympy.tensor.array import Array
@@ -47,7 +47,7 @@ arguments ``code_generator`` (the function) and additional keyword arguments
 to the generator in a dictionary ``code_generator_args``. You can change the
 defaults for future systems by changing the module variables
 
-.. code-block :: python
+.. code-block:: python
 
    import simupy.systems.symbolic
    simupy.systems.symbolic.DEFAULT_CODE_GENERATOR = your_code_generator_function
@@ -56,7 +56,7 @@ defaults for future systems by changing the module variables
 A number of helper classes/functions exist to simplify the construction of
 models. For example, a linear feedback controller can be defined as
 
-.. code-block :: python
+.. code-block:: python
 
    from simupy.systems import LTISystem
    ctrl = LTISystem([[1.73992128, 0.99212953,  -2.98819041]])
@@ -65,7 +65,7 @@ The gains in the example come from the infinite horizon LQR based on the system
 linearized about the origin. A block diagram of the system under feedback
 control can be constructed
 
-.. code-block :: python
+.. code-block:: python
 
    from simupy.block_diagram import BlockDiagram
    BD = BlockDiagram(sys, ctrl)
@@ -76,7 +76,7 @@ Initial conditions for systems with non-zero dimensional state can be defined
 (it defaults to zeros of the appropriate dimension) and the interconnected
 systems can be simulated with the ``BlockDiagram``'s ``simulate`` method,
 
-.. code-block :: python
+.. code:: python
 
    sys.initial_condition = [5, -3, 1]
    res = BD.simulate(10)

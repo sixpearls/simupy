@@ -88,13 +88,14 @@ def grad(f, basis, for_numerical=True):
     """
     if hasattr(f, '__len__'):  # as of version 1.1.1, Array isn't supported
         f = sp.Matrix(f)
+    dim_f = f.shape[0]
 
     return f.__class__([
         [
             sp.diff(f[x], basis[y])
             if not for_numerical or not f[x].has(sp.sign(basis[y])) else 0
             for y in range(len(basis))
-        ] for x in range(len(f))
+        ] for x in range(dim_f)
     ])
 
 
